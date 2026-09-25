@@ -504,6 +504,13 @@
         },
         {
           "name": "recipient_token_out_ata",
+          "docs": [
+            "Note: ATA for the recipient must exist to be filled.",
+            "It should be created by the recipient.",
+            "The solver can optionally do this as part of the fill",
+            "transaction, but they will end up donating the rent",
+            "to the recipient."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -687,6 +694,14 @@
         },
         {
           "name": "recipient_token_out_ata",
+          "docs": [
+            "Note: ATA for the recipient must exist to be filled.",
+            "It should be created by the recipient, perhaps bundled",
+            "with the \"open_order\" instruction.",
+            "The solver can optionally do this as part of the fill",
+            "transaction, but they will end up donating the rent",
+            "to the recipient."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -816,29 +831,6 @@
           "type": {
             "defined": {
               "name": "FillParams"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "idl_instruction",
-      "discriminator": [184, 210, 197, 207, 188, 74, 218, 150],
-      "accounts": [],
-      "args": [
-        {
-          "name": "foreign",
-          "type": {
-            "defined": {
-              "name": "ForeignOrder"
-            }
-          }
-        },
-        {
-          "name": "native",
-          "type": {
-            "defined": {
-              "name": "NativeOrder"
             }
           }
         }
@@ -1504,6 +1496,10 @@
       "discriminator": [134, 173, 223, 185, 77, 86, 28, 51]
     },
     {
+      "name": "Order",
+      "discriminator": [134, 173, 223, 185, 77, 86, 28, 51]
+    },
+    {
       "name": "OrderBookGlobal",
       "discriminator": [17, 42, 168, 220, 187, 87, 110, 200]
     }
@@ -1882,7 +1878,7 @@
       }
     },
     {
-      "name": "ForeignOrder",
+      "name": "ForeignOrderData",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1910,7 +1906,7 @@
       }
     },
     {
-      "name": "NativeOrder",
+      "name": "NativeOrderData",
       "type": {
         "kind": "struct",
         "fields": [
@@ -2012,13 +2008,7 @@
       }
     },
     {
-      "name": "Order",
-      "generics": [
-        {
-          "kind": "type",
-          "name": "T"
-        }
-      ],
+      "name": "NativeOrder",
       "type": {
         "kind": "struct",
         "fields": [
@@ -2037,8 +2027,136 @@
           {
             "name": "data",
             "type": {
-              "generic": "T"
+              "defined": {
+                "name": "NativeOrderData"
+              }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ForeignOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "order_type",
+            "type": {
+              "defined": {
+                "name": "OrderType"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "data",
+            "type": {
+              "defined": {
+                "name": "ForeignOrderData"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Order",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "order_type",
+            "type": {
+              "defined": {
+                "name": "OrderType"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "OrderStatus"
+              }
+            }
+          },
+          {
+            "name": "version",
+            "type": "u16"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "dest_chain_id",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "fill_deadline",
+            "type": "u64"
+          },
+          {
+            "name": "token_in",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_out",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "amount_in",
+            "type": "u128"
+          },
+          {
+            "name": "amount_out",
+            "type": "u128"
+          },
+          {
+            "name": "recipient",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "solver",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "amount_in_released",
+            "type": "u128"
+          },
+          {
+            "name": "amount_out_filled",
+            "type": "u128"
+          },
+          {
+            "name": "amount_in_refunded",
+            "type": "u128"
           }
         ]
       }
