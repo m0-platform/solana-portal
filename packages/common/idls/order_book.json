@@ -2,7 +2,7 @@
   "address": "MzLoYnJ6sF6eeejs4vV95TNmXqS3W4cAtLGKkjT4ZrK",
   "metadata": {
     "name": "order_book",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "spec": "0.1.0",
     "description": "SVM implementation of the M0 limit order specification for cross-chain liquidity delivery"
   },
