@@ -1,0 +1,26 @@
+# Reviewed false alarms. Each line is file:rule:start-line.
+# A new secret on a different line still fails the scan.
+tests/src/tests_04_index_update.rs:bare-32-byte-hex:158
+tests/src/tests_04_index_update.rs:bare-32-byte-hex:159
+runbooks/set_path/signers.devnet.tx:generic-api-key:7
+runbooks/set_path/signers.mainnet.tx:generic-api-key:7
+tests/src/tests_08_send_token.rs:bare-32-byte-hex:66
+tests/src/tests_07_bridge_path.rs:bare-32-byte-hex:57
+tests/src/tests_07_bridge_path.rs:bare-32-byte-hex:112
+tests/src/tests_07_bridge_path.rs:bare-32-byte-hex:156
+runbooks/set_path/main.tx:evm-32-byte-hex:2
+runbooks/set_path/main.tx:evm-32-byte-hex:12
+packages/common/src/payloads.rs:bare-32-byte-hex:435
+packages/common/src/payloads.rs:evm-32-byte-hex:425
+packages/common/src/payloads.rs:evm-32-byte-hex:428
+runbooks/deployment/signers.devnet.tx:generic-api-key:14
+runbooks/deployment/signers.mainnet.tx:generic-api-key:13
+runbooks/initialize/signers.devnet.tx:generic-api-key:7
+runbooks/initialize/signers.mainnet.tx:generic-api-key:7
+runbooks/pause/signers.devnet.tx:generic-api-key:7
+runbooks/pause/signers.mainnet.tx:generic-api-key:7
+runbooks/fund_receive_payer/signers.mainnet.tx:generic-api-key:7
+runbooks/set_peers/signers.devnet.tx:generic-api-key:7
+runbooks/set_peers/signers.mainnet.tx:generic-api-key:7
+tests/src/tests_04_index_update.rs:bare-32-byte-hex:148
+programs/wormhole-adapter/src/instructions/mod.rs:evm-32-byte-hex:89
