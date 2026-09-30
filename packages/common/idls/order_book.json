@@ -2,7 +2,7 @@
   "address": "MzLoYnJ6sF6eeejs4vV95TNmXqS3W4cAtLGKkjT4ZrK",
   "metadata": {
     "name": "order_book",
-    "version": "0.1.0",
+    "version": "1.2.0",
     "spec": "0.1.0",
     "description": "SVM implementation of the M0 limit order specification for cross-chain liquidity delivery"
   },
@@ -504,6 +504,13 @@
         },
         {
           "name": "recipient_token_out_ata",
+          "docs": [
+            "Note: ATA for the recipient must exist to be filled.",
+            "It should be created by the recipient.",
+            "The solver can optionally do this as part of the fill",
+            "transaction, but they will end up donating the rent",
+            "to the recipient."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -687,6 +694,14 @@
         },
         {
           "name": "recipient_token_out_ata",
+          "docs": [
+            "Note: ATA for the recipient must exist to be filled.",
+            "It should be created by the recipient, perhaps bundled",
+            "with the \"open_order\" instruction.",
+            "The solver can optionally do this as part of the fill",
+            "transaction, but they will end up donating the rent",
+            "to the recipient."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -907,7 +922,7 @@
           "name": "token_in_mint"
         },
         {
-          "name": "sender_token_in_account",
+          "name": "payer_token_in_account",
           "writable": true
         },
         {
@@ -920,8 +935,8 @@
                 "value": [110, 111, 110, 99, 101]
               },
               {
-                "kind": "account",
-                "path": "sender_token_in_account"
+                "kind": "arg",
+                "path": "params.sender"
               }
             ]
           }
@@ -1478,6 +1493,10 @@
     },
     {
       "name": "ForeignOrder",
+      "discriminator": [134, 173, 223, 185, 77, 86, 28, 51]
+    },
+    {
+      "name": "Order",
       "discriminator": [134, 173, 223, 185, 77, 86, 28, 51]
     },
     {
@@ -2045,6 +2064,104 @@
       }
     },
     {
+      "name": "Order",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "order_type",
+            "type": {
+              "defined": {
+                "name": "OrderType"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "OrderStatus"
+              }
+            }
+          },
+          {
+            "name": "version",
+            "type": "u16"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "dest_chain_id",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "u64"
+          },
+          {
+            "name": "fill_deadline",
+            "type": "u64"
+          },
+          {
+            "name": "token_in",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_out",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "amount_in",
+            "type": "u128"
+          },
+          {
+            "name": "amount_out",
+            "type": "u128"
+          },
+          {
+            "name": "recipient",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "solver",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "amount_in_released",
+            "type": "u128"
+          },
+          {
+            "name": "amount_out_filled",
+            "type": "u128"
+          },
+          {
+            "name": "amount_in_refunded",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
       "name": "OrderBookGlobal",
       "type": {
         "kind": "struct",
@@ -2264,6 +2381,24 @@
     },
     {
       "name": "OrderParams",
+      "docs": [
+        "Parameters required to open an order onchain",
+        "",
+        "Note: addresses on the destination chain are stored as 32 bytes to support non-SVM chains",
+        "as destinations",
+        "",
+        "- `dest_chain_id`: destination chain ID where the order is to be filled",
+        "- `created_at`: timestamp at which the client built the order",
+        "- `fill_deadline`: timestamp by which the order must be filled on the destination chain",
+        "- `token_out`: address of the output token on the destination chain",
+        "- `amount_in`: amount of input token provided",
+        "- `amount_out`: amount of output token expected",
+        "- `recipient`: address to receive the funds on the destination chain",
+        "- `solver`: address of the solver that will fill the order, or zero if any solver can fill",
+        "- `sender`: address that will own the order (for cancellation rights and refunds). Tokens are",
+        "pulled from `payer_token_in_account`, so the funder and the order owner may differ (e.g. a",
+        "deposit address funding an order for an end user)."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -2304,6 +2439,10 @@
             "type": {
               "array": ["u8", 32]
             }
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
           }
         ]
       }
