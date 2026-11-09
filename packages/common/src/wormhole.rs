@@ -1,9 +1,7 @@
-use anchor_client::solana_client::nonblocking::rpc_client::RpcClient;
-use anchor_client::solana_client::rpc_client::RpcClient as BlockingRpcClient;
-use anchor_lang::solana_program::{
-    hash::hashv,
-    instruction::{AccountMeta, Instruction},
-};
+use anchor_lang::solana_program::instruction::{AccountMeta, Instruction};
+use solana_rpc_client::nonblocking::rpc_client::RpcClient;
+use solana_rpc_client::rpc_client::RpcClient as BlockingRpcClient;
+use solana_sha256_hasher::hashv;
 use anchor_lang::{prelude::*, system_program};
 use serde::{Deserialize, Serialize};
 

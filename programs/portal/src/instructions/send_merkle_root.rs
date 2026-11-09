@@ -43,7 +43,7 @@ pub struct SendMerkleRoot<'info> {
 
 impl SendMerkleRoot<'_> {
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendMerkleRoot<'info>>,
+        ctx: Context<'info, SendMerkleRoot<'info>>,
         destination_chain_id: u32,
     ) -> Result<()> {
         let payload = PayloadData::EarnerMerkleRoot(EarnerMerkleRootPayload {

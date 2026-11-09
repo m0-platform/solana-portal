@@ -66,7 +66,7 @@ impl Initialize<'_> {
         if ctx.accounts.m_mint.mint_authority.unwrap() == ctx.accounts.old_token_authority.key() {
             token_interface::set_authority(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    ctx.accounts.token_program.key(),
                     token_interface::SetAuthority {
                         account_or_mint: ctx.accounts.m_mint.to_account_info(),
                         current_authority: ctx.accounts.old_token_authority.to_account_info(),

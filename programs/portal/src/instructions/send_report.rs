@@ -44,7 +44,7 @@ pub struct SendReport<'info> {
 
 impl SendReport<'_> {
     pub fn send_fill_report_handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendReport<'info>>,
+        ctx: Context<'info, SendReport<'info>>,
         order_id: [u8; 32],
         token_in: [u8; 32],
         amount_in_to_release: u128,
@@ -87,7 +87,7 @@ impl SendReport<'_> {
     }
 
     pub fn send_cancel_report_handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendReport<'info>>,
+        ctx: Context<'info, SendReport<'info>>,
         order_id: [u8; 32],
         order_sender: [u8; 32],
         token_in: [u8; 32],

@@ -5,7 +5,8 @@ use anchor_lang::{prelude::Pubkey, system_program, AccountDeserialize};
 use anchor_spl::token_2022;
 use anyhow::{Ok, Result};
 use solana_client::rpc_client::RpcClient;
-use solana_sdk::{compute_budget::ComputeBudgetInstruction, signature::Keypair};
+use solana_compute_budget_interface::ComputeBudgetInstruction;
+use solana_sdk::signature::Keypair;
 use solana_transaction_status_client_types::UiTransactionEncoding;
 use spl_token_2022::{
     extension::StateWithExtensions,
@@ -297,7 +298,7 @@ fn test_03_send_token_hyperlane_success() -> Result<()> {
             recipient: ctx.portal.payer().to_bytes(),
         })
         .accounts(hyp.to_account_metas())
-        .instructions()?;
+        .instructions();
 
     let versioned_tx = build_versioned_tx_with_lut(ctx.rpc.clone(), instructions)?;
     ctx.rpc.send_and_confirm_transaction(&versioned_tx)?;

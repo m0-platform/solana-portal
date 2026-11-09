@@ -14,9 +14,9 @@ use m0_portal_common::{
     HyperlaneRemainingAccounts, WormholeRemainingAccounts,
 };
 use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_address_lookup_table_interface::state::AddressLookupTable;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_sdk::{
-    address_lookup_table::state::AddressLookupTable,
-    compute_budget::ComputeBudgetInstruction,
     instruction::{AccountMeta, Instruction as SolanaInstruction},
     message::{v0, AddressLookupTableAccount, VersionedMessage},
     pubkey::Pubkey,

@@ -90,7 +90,7 @@ pub mod wormhole_adapter {
     /// Inbound Instructions
 
     pub fn receive_message<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         guardian_set_index: u32,
         vaa_body: Vec<u8>,
     ) -> Result<()> {
@@ -99,7 +99,7 @@ pub mod wormhole_adapter {
 
     #[instruction(discriminator = &RESOLVER_EXECUTE_VAA_V1)]
     pub fn resolve_execute<'info>(
-        ctx: Context<'_, '_, 'info, 'info, ResolveExecuteVaa>,
+        ctx: Context<'info, ResolveExecuteVaa>,
         vaa_body: Vec<u8>,
     ) -> Result<Resolver<InstructionGroups>> {
         ResolveExecuteVaa::handler(ctx, vaa_body)

@@ -4,17 +4,17 @@ use anchor_spl::{associated_token::get_associated_token_address_with_program_id,
 use anyhow::Result;
 use solana_client::rpc_client::RpcClient;
 
+use solana_system_interface::instruction as system_instruction;
 use solana_sdk::{
     pubkey::Pubkey,
     signature::{Keypair, Signer},
-    system_instruction,
     transaction::Transaction,
 };
 use spl_token_2022::{
     extension::ExtensionType, instruction as token2022_ix, state::Mint as Token2022MintState,
 };
 
-use spl_associated_token_account::instruction::create_associated_token_account;
+use spl_associated_token_account_interface::instruction::create_associated_token_account;
 
 pub fn create_token2022_mint(rpc: &RpcClient, payer: &Keypair, decimals: u8) -> Result<Pubkey> {
     let mint_kp = Keypair::new();

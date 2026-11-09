@@ -3,7 +3,7 @@ use anchor_lang::{
     InstructionData,
 };
 use anchor_spl::{
-    associated_token::spl_associated_token_account::solana_program::system_instruction::MAX_PERMITTED_DATA_LENGTH,
+    
     token_2022,
 };
 use m0_portal_common::{
@@ -35,7 +35,7 @@ pub struct ExecutorAccountResolverResult(Resolver<InstructionGroups>);
 
 impl ResolveExecuteVaa {
     pub fn handler<'info>(
-        ctx: Context<'_, '_, 'info, 'info, ResolveExecuteVaa>,
+        ctx: Context<'info, ResolveExecuteVaa>,
         vaa_body: Vec<u8>,
     ) -> Result<Resolver<InstructionGroups>> {
         let vaa = VaaBody::from_bytes(&vaa_body)?;
@@ -141,7 +141,7 @@ impl ResolveExecuteVaa {
 
             let size = usize::min(
                 return_account.data_len() + MAX_PERMITTED_DATA_INCREASE,
-                MAX_PERMITTED_DATA_LENGTH.try_into()?,
+                solana_system_interface::MAX_PERMITTED_DATA_LENGTH.try_into()?,
             );
 
             let lamports = Rent::get()
@@ -151,7 +151,7 @@ impl ResolveExecuteVaa {
 
             system_program::transfer(
                 CpiContext::new(
-                    system_account.to_account_info(),
+                    system_account.key(),
                     system_program::Transfer {
                         from: payer_account.to_account_info(),
                         to: return_account.to_account_info(),

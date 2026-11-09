@@ -28,6 +28,7 @@ anchor-lang.workspace = true
 anchor-spl.workspace = true
 m0-portal-common = { path = "../../packages/common" }
 solana-security-txt.workspace = true
+solana-keccak-hasher.workspace = true
 
 [dev-dependencies]
 alloy-sol-types = "0.8"

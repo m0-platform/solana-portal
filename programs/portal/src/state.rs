@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_spl::associated_token::spl_associated_token_account::solana_program::keccak;
 
 pub const ETHEREUM_CHAIN_ID: u32 = 1;
 pub const SEPOLIA_CHAIN_ID: u32 = 11155111;
@@ -49,7 +48,7 @@ impl PortalGlobal {
         encoded[60..64].copy_from_slice(&destination_chain_id.to_be_bytes());
         encoded[88..96].copy_from_slice(&self.message_nonce.to_be_bytes());
 
-        keccak::hash(&encoded).to_bytes()
+        solana_keccak_hasher::hash(&encoded).to_bytes()
     }
 }
 

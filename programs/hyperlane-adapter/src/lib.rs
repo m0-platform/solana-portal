@@ -105,7 +105,7 @@ pub mod hyperlane_adapter {
 
     #[instruction(discriminator = &HANDLE_DISCRIMINATOR)]
     pub fn receive_message<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         origin: u32,
         sender: [u8; 32],
         message: Vec<u8>,

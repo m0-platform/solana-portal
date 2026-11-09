@@ -8,8 +8,8 @@ use anchor_lang::AccountDeserialize;
 use anyhow::Result;
 use m0_portal_common::{pda, wormhole_adapter::accounts::WormholeGlobal, Payload};
 use solana_client::rpc_client::RpcClient;
+use solana_address_lookup_table_interface::state::AddressLookupTable;
 use solana_sdk::{
-    address_lookup_table::state::AddressLookupTable,
     bs58,
     message::{v0, AddressLookupTableAccount, VersionedMessage},
     signer::Signer,

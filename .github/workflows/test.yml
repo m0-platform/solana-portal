@@ -91,9 +91,9 @@ jobs:
       - name: Install Solana + Anchor
         shell: bash
         run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          sh -c "$(curl -sSfL https://release.anza.xyz/v4.2.2/install)"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-          cargo install anchor-cli@0.32.1
+          cargo install anchor-cli@1.2.0 --locked
 
       - name: Create deploy directory
         run: mkdir -p target/deploy

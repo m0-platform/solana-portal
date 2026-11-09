@@ -110,7 +110,7 @@ impl WrapUnclaimed<'_> {
         // Wrap $M tokens to an extension designated by the admin
         ext_swap::cpi::wrap(
             CpiContext::new_with_signer(
-                ctx.accounts.swap_program.to_account_info(),
+                ctx.accounts.swap_program.key(),
                 ext_swap::cpi::accounts::Wrap {
                     signer: ctx.accounts.portal_authority.to_account_info(),
                     wrap_authority: Some(ctx.accounts.portal_authority.to_account_info()),

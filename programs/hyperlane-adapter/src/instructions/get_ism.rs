@@ -20,7 +20,7 @@ impl GetIsm<'_> {
     pub fn handler(ctx: Context<Self>) -> Result<()> {
         // Uses default ISM if there is no return data or Option::None was returned
         // https://github.com/hyperlane-xyz/hyperlane-monorepo/blob/18b43e96d14f9023f25047cb9820079731eeff14/rust/sealevel/programs/mailbox/src/processor.rs#L488
-        program::set_return_data(&ctx.accounts.hyperlane_global.ism.try_to_vec()?[..]);
+        program::set_return_data(&borsh::to_vec(&ctx.accounts.hyperlane_global.ism)?[..]);
 
         Ok(())
     }
@@ -34,9 +34,8 @@ impl GetIsmMetas {
         let account_metas: Vec<SerializableAccountMeta> =
             vec![AccountMeta::new_readonly(pda!(&[GLOBAL_SEED], &crate::ID), false).into()];
 
-        let bytes = SimulationReturnData::new(account_metas)
-            .try_to_vec()
-            .map_err(|err| ProgramError::BorshIoError(err.to_string()))?;
+        let bytes = borsh::to_vec(&SimulationReturnData::new(account_metas))
+            .map_err(|_| ProgramError::BorshIoError)?;
 
         program::set_return_data(&bytes[..]);
 

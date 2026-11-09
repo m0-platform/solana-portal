@@ -122,7 +122,7 @@ impl SendMessage<'_> {
         if bridge_fee > 0 {
             transfer(
                 CpiContext::new(
-                    ctx.accounts.system_program.to_account_info(),
+                    ctx.accounts.system_program.key(),
                     Transfer {
                         from: ctx.accounts.payer.to_account_info(),
                         to: ctx.accounts.fee_collector.to_account_info(),
@@ -155,7 +155,7 @@ impl SendMessage<'_> {
 
         wormhole_post_message_shim::cpi::post_message(
             CpiContext::new_with_signer(
-                ctx.accounts.wormhole_post_message_shim.to_account_info(),
+                ctx.accounts.wormhole_post_message_shim.key(),
                 wormhole_post_message_shim::cpi::accounts::PostMessage {
                     payer: ctx.accounts.payer.to_account_info(),
                     bridge: ctx.accounts.bridge.to_account_info(),

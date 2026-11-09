@@ -4,7 +4,6 @@ use anchor_spl::{
     token_2022::Token2022,
     token_interface::{self, Mint},
 };
-use borsh::BorshDeserialize;
 use m0_portal_common::{
     earn::{self, accounts::EarnGlobal, cpi::accounts::PropagateIndex, program::Earn},
     ext_swap::{self, accounts::SwapGlobal},
@@ -115,7 +114,7 @@ impl ReceiveMessage<'_> {
 
     #[access_control(ctx.accounts.validate(message_id, source_chain_id, &payload))]
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         message_id: [u8; 32],
         source_chain_id: u32,
         payload: Vec<u8>,
@@ -178,13 +177,13 @@ impl ReceiveMessage<'_> {
     }
 
     fn propagate_index<'info>(
-        ctx: &Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: &Context<'info, ReceiveMessage<'info>>,
         message: &Payload,
     ) -> Result<()> {
         let authority_seed: &[&[&[u8]]] = &[&[AUTHORITY_SEED, &[ctx.bumps.portal_authority]]];
 
         let propogate_ctx = CpiContext::new_with_signer(
-            ctx.accounts.earn_program.to_account_info(),
+            ctx.accounts.earn_program.key(),
             PropagateIndex {
                 signer: ctx.accounts.portal_authority.to_account_info(),
                 global_account: ctx.accounts.earn_global.to_account_info(),
@@ -211,7 +210,7 @@ impl ReceiveMessage<'_> {
     }
 
     fn handle_token_transfer_payload<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         source_chain_id: u32,
         payload: TokenTransferPayload,
         message_id: [u8; 32],
@@ -241,7 +240,7 @@ impl ReceiveMessage<'_> {
         // Mint to authority account
         token_interface::mint_to(
             CpiContext::new_with_signer(
-                ctx.accounts.m_token_program.to_account_info(),
+                ctx.accounts.m_token_program.key(),
                 token_interface::MintTo {
                     mint: ctx.accounts.m_mint.to_account_info(),
                     to: accounts.authority_m_token_account.clone(),
@@ -265,7 +264,7 @@ impl ReceiveMessage<'_> {
             // Initialize recipient token account if not already initialized
             if accounts.recipient_token_account.data_is_empty() {
                 associated_token::create(CpiContext::new(
-                    accounts.associated_token_program.to_account_info(),
+                    accounts.associated_token_program.key(),
                     associated_token::Create {
                         payer: ctx.accounts.payer.to_account_info(),
                         associated_token: accounts.recipient_token_account.clone(),
@@ -280,7 +279,7 @@ impl ReceiveMessage<'_> {
             // Normal flow: wrap $M to extension tokens
             ext_swap::cpi::wrap(
                 CpiContext::new_with_signer(
-                    accounts.swap_program,
+                    accounts.swap_program.key(),
                     ext_swap::cpi::accounts::Wrap {
                         signer: ctx.accounts.portal_authority.to_account_info(),
                         wrap_authority: Some(ctx.accounts.portal_authority.to_account_info()),
@@ -344,7 +343,7 @@ impl ReceiveMessage<'_> {
     }
 
     fn handle_fill_report_payload<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         source_chain_id: u32,
         payload: FillReportPayload,
         message_id: [u8; 32],
@@ -354,7 +353,7 @@ impl ReceiveMessage<'_> {
 
         order_book::cpi::report_order_fill(
             CpiContext::new_with_signer(
-                accounts.orderbook_program.clone(),
+                accounts.orderbook_program.key(),
                 order_book::cpi::accounts::ReportOrderFill {
                     relayer: ctx.accounts.payer.to_account_info(), // Relayer pays for ATA initialization
                     portal_authority: ctx.accounts.portal_authority.to_account_info(),
@@ -397,7 +396,7 @@ impl ReceiveMessage<'_> {
     }
 
     fn handle_cancel_report_payload<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         source_chain_id: u32,
         payload: CancelReportPayload,
         message_id: [u8; 32],
@@ -407,7 +406,7 @@ impl ReceiveMessage<'_> {
 
         order_book::cpi::report_order_cancel(
             CpiContext::new_with_signer(
-                accounts.orderbook_program.clone(),
+                accounts.orderbook_program.key(),
                 order_book::cpi::accounts::ReportOrderCancel {
                     relayer: ctx.accounts.payer.to_account_info(), // Relayer pays for ATA initialization
                     portal_authority: ctx.accounts.portal_authority.to_account_info(),

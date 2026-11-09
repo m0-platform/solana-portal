@@ -98,21 +98,21 @@ pub mod portal {
     /// Outbound Instructions
 
     pub fn send_index<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendIndex<'info>>,
+        ctx: Context<'info, SendIndex<'info>>,
         destination_chain_id: u32,
     ) -> Result<()> {
         SendIndex::handler(ctx, destination_chain_id)
     }
 
     pub fn send_merkle_root<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendMerkleRoot<'info>>,
+        ctx: Context<'info, SendMerkleRoot<'info>>,
         destination_chain_id: u32,
     ) -> Result<()> {
         SendMerkleRoot::handler(ctx, destination_chain_id)
     }
 
     pub fn send_token<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendToken<'info>>,
+        ctx: Context<'info, SendToken<'info>>,
         amount: u64,
         destination_token: [u8; 32],
         destination_chain_id: u32,
@@ -128,7 +128,7 @@ pub mod portal {
     }
 
     pub fn send_fill_report<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendReport<'info>>,
+        ctx: Context<'info, SendReport<'info>>,
         order_id: [u8; 32],
         token_in: [u8; 32],
         amount_in_to_release: u128,
@@ -148,7 +148,7 @@ pub mod portal {
     }
 
     pub fn send_cancel_report<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendReport<'info>>,
+        ctx: Context<'info, SendReport<'info>>,
         order_id: [u8; 32],
         order_sender: [u8; 32],
         token_in: [u8; 32],
@@ -168,7 +168,7 @@ pub mod portal {
     /// Inbound Instructions
 
     pub fn receive_message<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         message_id: [u8; 32],
         source_chain_id: u32,
         payload: Vec<u8>,

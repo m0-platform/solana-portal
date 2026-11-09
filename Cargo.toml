@@ -12,9 +12,10 @@ incremental = false
 codegen-units = 1
 
 [workspace.dependencies]
-anchor-lang = "0.31.1"
-anchor-spl = "0.31.1"
-anchor-client = "0.31.1"
+anchor-lang = "1.2.0"
+anchor-spl = "1.2.0"
+anchor-client = "1.2.0"
+solana-keccak-hasher = { version = "3", features = ["sha3"] }
 solana-security-txt = "1.1.1"
 cfg-if = "1.0"
-borsh = "0.10.3"
+borsh = "1.5"
