@@ -59,7 +59,7 @@ pub fn send_message<'info>(
 
         wormhole_adapter::cpi::send_message(
             CpiContext::new_with_signer(
-                bridge_adapter.to_account_info(),
+                bridge_adapter.key(),
                 wormhole_adapter::cpi::accounts::SendMessage {
                     payer: sender,
                     wormhole_global,
@@ -112,7 +112,7 @@ pub fn send_message<'info>(
 
         hyperlane_adapter::cpi::send_message(
             CpiContext::new_with_signer(
-                bridge_adapter.to_account_info(),
+                bridge_adapter.key(),
                 hyperlane_adapter::cpi::accounts::SendMessage {
                     payer: sender,
                     hyperlane_global,

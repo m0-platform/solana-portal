@@ -33,7 +33,7 @@ pub struct SendIndex<'info> {
 
 impl SendIndex<'_> {
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendIndex<'info>>,
+        ctx: Context<'info, SendIndex<'info>>,
         destination_chain_id: u32,
     ) -> Result<()> {
         let payload = PayloadData::Index(IndexPayload {});

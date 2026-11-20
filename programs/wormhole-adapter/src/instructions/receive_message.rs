@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    associated_token::spl_associated_token_account::solana_program::keccak, token_2022::Token2022,
+    token_2022::Token2022,
     token_interface::Mint,
 };
 use m0_portal_common::{
@@ -98,14 +98,14 @@ impl ReceiveMessage<'_> {
         msg!("SKIPPING VALIDATION FEATURE ENABLED");
 
         // Compute the message hash
-        let message_hash = &keccak::hashv(&[&vaa_body]).to_bytes();
-        let digest = keccak::hash(message_hash.as_slice()).to_bytes();
+        let message_hash = &solana_keccak_hasher::hashv(&[&vaa_body]).to_bytes();
+        let digest = solana_keccak_hasher::hash(message_hash.as_slice()).to_bytes();
 
         // Verify the hash against the signatures
         #[cfg(not(feature = "skip-validation"))]
         wormhole_verify_vaa_shim::cpi::verify_hash(
             CpiContext::new(
-                self.wormhole_verify_vaa_shim.to_account_info(),
+                self.wormhole_verify_vaa_shim.key(),
                 VerifyHash {
                     guardian_set: self.guardian_set.to_account_info(),
                     guardian_signatures: self.guardian_signatures.to_account_info(),
@@ -124,7 +124,7 @@ impl ReceiveMessage<'_> {
 
     #[access_control(ctx.accounts.validate(ctx.bumps.guardian_set, &vaa_body))]
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         #[allow(unused_variables)] guardian_set_index: u32,
         vaa_body: Vec<u8>,
     ) -> Result<()> {
@@ -133,7 +133,7 @@ impl ReceiveMessage<'_> {
 
         portal::cpi::receive_message(
             CpiContext::new_with_signer(
-                ctx.accounts.portal_program.to_account_info(),
+                ctx.accounts.portal_program.key(),
                 portal::cpi::accounts::ReceiveMessage {
                     payer: ctx.accounts.relayer.to_account_info(),
                     portal_global: ctx.accounts.portal_global.to_account_info(),

@@ -13,14 +13,14 @@ use m0_portal_common::{
     pda, portal, AUTHORITY_SEED,
 };
 use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_address_lookup_table_interface::instruction::{create_lookup_table, extend_lookup_table};
+use solana_commitment_config::CommitmentConfig;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
+use solana_system_interface::program::ID as SYSTEM_PROGRAM_ID;
 use solana_sdk::{
-    address_lookup_table::instruction::{create_lookup_table, extend_lookup_table},
-    commitment_config::CommitmentConfig,
-    compute_budget::ComputeBudgetInstruction,
     pubkey::Pubkey,
     signature::Keypair,
     signer::{EncodableKey, Signer},
-    system_program::ID as SYSTEM_PROGRAM_ID,
     transaction::Transaction,
 };
 use std::str::FromStr;

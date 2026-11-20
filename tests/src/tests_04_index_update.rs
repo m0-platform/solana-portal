@@ -17,7 +17,7 @@ use portal::{
     state::PortalGlobal,
     {accounts, instruction},
 };
-use solana_sdk::compute_budget::ComputeBudgetInstruction;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_transaction_status_client_types::UiTransactionEncoding;
 
 use crate::{get_rpc_client, get_signer, util};

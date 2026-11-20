@@ -118,14 +118,14 @@ impl ReceiveMessage<'_> {
 
     #[access_control(ctx.accounts.validate(origin, &sender))]
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, ReceiveMessage<'info>>,
+        ctx: Context<'info, ReceiveMessage<'info>>,
         origin: u32,
         sender: [u8; 32],
         message: Vec<u8>,
     ) -> Result<()> {
         portal::cpi::receive_message(
             CpiContext::new_with_signer(
-                ctx.accounts.portal_program.to_account_info(),
+                ctx.accounts.portal_program.key(),
                 portal::cpi::accounts::ReceiveMessage {
                     payer: ctx.accounts.receive_payer.to_account_info(),
                     adapter_authority: ctx.accounts.hyperlane_adapter_authority.to_account_info(),
@@ -212,9 +212,8 @@ impl<'info> ReceiveMessageMetas<'info> {
         // Add expected remaining accounts based on payload type
         account_metas.extend(required_remaining.iter().cloned().map(|a| a.into()));
 
-        let bytes = SimulationReturnData::new(account_metas)
-            .try_to_vec()
-            .map_err(|err| ProgramError::BorshIoError(err.to_string()))?;
+        let bytes = borsh::to_vec(&SimulationReturnData::new(account_metas))
+            .map_err(|_| ProgramError::BorshIoError)?;
 
         program::set_return_data(&bytes[..]);
 

@@ -17,11 +17,11 @@ use m0_portal_common::{
 };
 use portal::state::MESSAGE_SEED;
 use solana_client::rpc_config::RpcSendTransactionConfig;
-use solana_sdk::compute_budget::ComputeBudgetInstruction;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_sdk::transaction::Transaction;
 use solana_sdk::{instruction::Instruction, pubkey::Pubkey, signer::Signer};
 use solana_transaction_status_client_types::UiTransactionEncoding;
-use spl_associated_token_account::get_associated_token_address_with_program_id;
+use anchor_spl::associated_token::get_associated_token_address_with_program_id;
 use wormhole_adapter::{
     accounts as wormhole_accounts, consts::CORE_BRIDGE_PROGRAM_ID,
     instruction as wormhole_instruction, instructions::VaaBody,
@@ -479,7 +479,7 @@ fn test_10_uninitialized_token_account() -> Result<()> {
         })
         .accounts(metas)
         .instruction(ComputeBudgetInstruction::set_compute_unit_limit(600_000))
-        .instructions()?;
+        .instructions();
 
     let versioned_tx = build_versioned_tx_with_lut(rpc_client.clone(), instructions)?;
 

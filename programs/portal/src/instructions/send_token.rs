@@ -163,7 +163,7 @@ impl SendToken<'_> {
 
     #[access_control(ctx.accounts.validate(amount, destination_token, destination_chain_id))]
     pub fn handler<'info>(
-        ctx: Context<'_, '_, '_, 'info, SendToken<'info>>,
+        ctx: Context<'info, SendToken<'info>>,
         amount: u64,
         destination_token: [u8; 32],
         destination_chain_id: u32,
@@ -174,7 +174,7 @@ impl SendToken<'_> {
         // Unwrap extension tokens to $M
         ext_swap::cpi::unwrap(
             CpiContext::new_with_signer(
-                ctx.accounts.swap_program.to_account_info(),
+                ctx.accounts.swap_program.key(),
                 ext_swap::cpi::accounts::Unwrap {
                     signer: ctx.accounts.sender.to_account_info(),
                     unwrap_authority: Some(ctx.accounts.portal_authority.to_account_info()),
@@ -204,7 +204,7 @@ impl SendToken<'_> {
         // Burn $M
         token_interface::burn(
             CpiContext::new_with_signer(
-                ctx.accounts.m_token_program.to_account_info(),
+                ctx.accounts.m_token_program.key(),
                 token_interface::Burn {
                     mint: ctx.accounts.m_mint.to_account_info(),
                     from: ctx.accounts.m_token_account.to_account_info(),

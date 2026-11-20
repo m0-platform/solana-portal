@@ -1,6 +1,7 @@
-use anchor_lang::AnchorDeserialize;
 use anyhow::{Context, Result};
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
+// executor-account-resolver-svm is built on Anchor 0.32, so its Pubkey and borsh types are the
+// pre-1.0 ones: keys convert by bytes and Resolver deserializes through anchor-lang 0.32.
 use executor_account_resolver_svm::{
     InstructionGroups, Resolver, RESOLVER_PUBKEY_GUARDIAN_SET, RESOLVER_PUBKEY_PAYER,
     RESOLVER_PUBKEY_SHIM_VAA_SIGS,
@@ -8,9 +9,9 @@ use executor_account_resolver_svm::{
 use m0_portal_common::{pda, wormhole_adapter, wormhole_verify_vaa_shim};
 use serde::Deserialize;
 use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_address_lookup_table_interface::state::AddressLookupTable;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_sdk::{
-    address_lookup_table::state::AddressLookupTable,
-    compute_budget::ComputeBudgetInstruction,
     instruction::{AccountMeta, Instruction},
     message::{v0, AddressLookupTableAccount, VersionedMessage},
     pubkey::Pubkey,
@@ -158,7 +159,7 @@ pub async fn relay_message(vaa_id: String, rpc_url: Option<String>, testnet: boo
             let luts: Vec<Pubkey> = groups
                 .0
                 .iter()
-                .flat_map(|g| g.address_lookup_tables.clone())
+                .flat_map(|g| g.address_lookup_tables.iter().map(|k| Pubkey::new_from_array(k.to_bytes())))
                 .collect();
             (groups, luts)
         }
@@ -342,7 +343,7 @@ fn build_post_signatures_ix(
         accounts: vec![
             AccountMeta::new(*payer, true),
             AccountMeta::new(*guardian_sigs_account, true),
-            AccountMeta::new_readonly(solana_sdk::system_program::ID, false),
+            AccountMeta::new_readonly(solana_system_interface::program::ID, false),
         ],
         data,
     }
@@ -440,7 +441,7 @@ async fn resolve_accounts(
             .context("Failed to decode return data")?;
 
         let resolver: Resolver<InstructionGroups> =
-            AnchorDeserialize::deserialize(&mut decoded.as_slice())
+            anchor_lang_032::AnchorDeserialize::deserialize(&mut decoded.as_slice())
                 .context("Failed to deserialize return data as Resolver")?;
 
         match &resolver {
@@ -459,12 +460,12 @@ async fn resolve_accounts(
                         continue;
                     }
                     println!("    Adding: {}", pubkey);
-                    account_metas.push(AccountMeta::new(*pubkey, false));
+                    account_metas.push(AccountMeta::new(Pubkey::new_from_array(pubkey.to_bytes()), false));
                 }
                 // Also fetch and add LUT addresses
                 for lut_pubkey in &missing.address_lookup_tables {
                     println!("    Adding LUT: {}", lut_pubkey);
-                    account_metas.push(AccountMeta::new_readonly(*lut_pubkey, false));
+                    account_metas.push(AccountMeta::new_readonly(Pubkey::new_from_array(lut_pubkey.to_bytes()), false));
                 }
                 continue;
             }
@@ -500,7 +501,7 @@ async fn resolve_accounts(
                 }
 
                 let account_resolver: Resolver<InstructionGroups> =
-                    AnchorDeserialize::deserialize(&mut &data_bytes[8..])
+                    anchor_lang_032::AnchorDeserialize::deserialize(&mut &data_bytes[8..])
                         .context("Failed to deserialize result account as Resolver")?;
 
                 return Ok(account_resolver);
@@ -531,7 +532,7 @@ fn build_receive_ix(
             } else if a.pubkey == RESOLVER_PUBKEY_GUARDIAN_SET {
                 guardian_set
             } else {
-                a.pubkey
+                Pubkey::new_from_array(a.pubkey.to_bytes())
             };
 
             if a.is_writable {
@@ -543,7 +544,7 @@ fn build_receive_ix(
         .collect();
 
     Instruction {
-        program_id: serialized.program_id,
+        program_id: Pubkey::new_from_array(serialized.program_id.to_bytes()),
         accounts,
         data: serialized.data.clone(),
     }
